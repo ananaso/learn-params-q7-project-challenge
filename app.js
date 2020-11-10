@@ -87,7 +87,8 @@ app.get('/students/search', (req, res) => {
   if (filteredStudents.length > 0) {
     result = {
       status: "success",
-      message: filteredStudents
+      message: `Found students with names containing '${searchName}'`,
+      students: filteredStudents
     };
   } else {
     result = {
