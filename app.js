@@ -149,5 +149,23 @@ app.post('/register', (req, res) => {
   res.json(result);
 });
 
+app.post('/grades/:studentID', (req, res) => {
+  let result = {
+    status: "failure",
+    message: `Couldn't update grades for Student #${req.params.studentID}`
+  }
+  let student = _getStudentByID(req.params.studentID);
+  let grades = req.body.grades;
+  if (student && grades) {
+    let index = students.indexOf(student);
+    students[index].grades = {...student.grades, ...grades};
+    result = {
+      status: "success",
+      message: `Updated grades for Student #${req.params.studentID}`
+    }
+  }
+  res.json(result);
+})
+
 const port = 3000;
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
