@@ -1,0 +1,24 @@
+{
+  "name": "learn-params-q7-project-challenge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ananaso/learn-params-q7-project-challenge.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ananaso/learn-params-q7-project-challenge/issues"
+  },
+  "homepage": "https://github.com/ananaso/learn-params-q7-project-challenge#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
+}
