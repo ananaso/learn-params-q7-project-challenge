@@ -33,6 +33,14 @@ const students = [
   }
 ];
 
+_sortStudentsByID = () => {
+  let tempStudents = students;
+  tempStudents.sort((a, b) => {
+    return a.id - b.id;
+  })
+  return tempStudents;
+}
+
 _getStudentByID = (studentID) => {
   let reqdStudent = students.filter(student => student.id === Number(studentID));
   if (reqdStudent.length > 0) {
@@ -44,6 +52,13 @@ _getStudentByID = (studentID) => {
       }
       res.json(result);
   }
+};
+
+_getNewStudentID = () => {
+  let sortedStudents = _sortStudentsByID();
+  let numStudents = sortedStudents.length;
+  let lastStudent = sortedStudents[numStudents - 1];
+  return lastStudent.id + 1;
 }
 
 app.get('/students', (req, res) => res.send(students));
@@ -64,6 +79,31 @@ app.get('/grades/:studentID', (req, res) => {
   if (student) {
     res.send(student.grades);
   }
+});
+
+app.post('/register', (req, res) => {
+  let {name} = req.body;
+  if (name.first && name.last) {
+    let newStudentID = _getNewStudentID();
+    users.push({
+        id: newStudentID,
+        name: name,
+        grades: {}
+    });
+
+    result = {
+        "status": "success",
+        "message": "The User was successfully added"
+    }
+  } else {
+    result = {
+        "status": "failed",
+        "message": "The user was not added"
+    }
+    res.status(400);
+  }
+
+  res.json(result);
 });
 
 const port = 3000;
