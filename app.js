@@ -58,39 +58,44 @@ _getNewStudentID = () => {
 }
 
 _searchStudentNames = (searchName) => {
-  let searchStr = searchName.toLowerCase();
-  return students.map(student => {
-    let firstName = student.name.first.toLowerCase();
-    let lastName = student.name.last.toLowerCase();
-    if (firstName.includes(searchStr) || lastName.includes(searchStr)) {
-      return student;
-    }
-  }).filter(student => student !== undefined);
+  let matchedStudents = [];
+  if (searchName) {
+    let searchStr = searchName.toLowerCase();
+    matchedStudents = students.map(student => {
+      let firstName = student.name.first.toLowerCase();
+      let lastName = student.name.last.toLowerCase();
+      if (firstName.includes(searchStr) || lastName.includes(searchStr)) {
+        return student;
+      }
+    }).filter(student => student !== undefined);
+  }
+  return matchedStudents;
 }
 
 app.get('/students', (req, res) => {
-  let searchName = req.query.search;
-  let result;
-  if (searchName) {
-    let filteredStudents = _searchStudentNames(searchName);
-    if (filteredStudents.length > 0) {
-      result = {
-        status: "success",
-        message: filteredStudents
-      };
-    } else {
-      result = {
-        status: "failure",
-        message: "No students with that name found"
-      };
-    }
-  } else {
+  let result = {
+    status: "success",
+    message: "Got all students",
+    students: students
+  };
+  res.json(result);
+});
+
+app.get('/students/search', (req, res) => {
+  let searchName = req.query.name;
+  let filteredStudents = _searchStudentNames(searchName);
+  if (filteredStudents.length > 0) {
     result = {
       status: "success",
-      message: students
+      message: filteredStudents
+    };
+  } else {
+    result = {
+      status: "failure",
+      message: "No students with that name found"
     };
   }
-  res.send(result);
+  res.json(result);
 });
 
 app.get('/students/:studentID', (req, res) => {
