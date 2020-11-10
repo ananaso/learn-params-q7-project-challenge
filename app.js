@@ -43,15 +43,11 @@ _sortStudentsByID = () => {
 
 _getStudentByID = (studentID) => {
   let reqdStudent = students.filter(student => student.id === Number(studentID));
+  let result;
   if (reqdStudent.length > 0) {
-      return reqdStudent[0];
-  } else {
-      result = {
-          "status": "failed",
-          "message": `Student with ID #${req.params.studentID} not found`
-      }
-      res.json(result);
+      result = reqdStudent[0];
   }
+  return result;
 };
 
 _getNewStudentID = () => {
@@ -61,24 +57,72 @@ _getNewStudentID = () => {
   return lastStudent.id + 1;
 }
 
-app.get('/students', (req, res) => res.send(students));
+_searchStudentNames = (searchName) => {
+  let searchStr = searchName.toLowerCase();
+  return students.map(student => {
+    let firstName = student.name.first.toLowerCase();
+    let lastName = student.name.last.toLowerCase();
+    if (firstName.includes(searchStr) || lastName.includes(searchStr)) {
+      return student;
+    }
+  }).filter(student => student !== undefined);
+}
 
-app.get('/students?search=', (req, res) => {
-  res.send(`Hello There! General ${req.query}`);
+app.get('/students', (req, res) => {
+  let searchName = req.query.search;
+  let result;
+  if (searchName) {
+    let filteredStudents = _searchStudentNames(searchName);
+    if (filteredStudents.length > 0) {
+      result = {
+        status: "success",
+        message: filteredStudents
+      };
+    } else {
+      result = {
+        status: "failure",
+        message: "No students with that name found"
+      };
+    }
+  } else {
+    result = {
+      status: "success",
+      message: students
+    };
+  }
+  res.send(result);
 });
 
 app.get('/students/:studentID', (req, res) => {
+  let result = {
+    status: "failure",
+    message: `Student #${req.params.studentID} could not be found`
+  }
   let student = _getStudentByID(req.params.studentID);
   if (student) {
-    res.send(student);
+    result = {
+      status: "success",
+      message: `Student #${req.params.studentID} found`,
+      student: student
+    }
   }
+  res.json(result);
 });
 
 app.get('/grades/:studentID', (req, res) => {
+  let result = {
+    status: "failure",
+    message: `Student #${req.params.studentID} could not be found`
+  }
   let student = _getStudentByID(req.params.studentID);
   if (student) {
-    res.send(student.grades);
+    result = {
+      status: "success",
+      message: `Grades for Student #${req.params.studentID} found`,
+      grades: student.grades
+    }
   }
+  res.json(result);
 });
 
 app.post('/register', (req, res) => {
@@ -102,7 +146,6 @@ app.post('/register', (req, res) => {
     }
     res.status(400);
   }
-
   res.json(result);
 });
 
